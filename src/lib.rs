@@ -2,6 +2,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
 
+#[derive(Debug, PartialEq)]
 pub struct Config {
     query: String,
     filename: String,
@@ -24,4 +25,47 @@ pub fn run(config: Config) -> Result<(), Box<Error>> {
     let mut contents = String::new();
     f.read_to_string(&mut contents)?;
     Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn config_ok() {
+        let config = Config::new(vec![String::from("a"), String::from("b")]).unwrap();
+        assert_eq!(
+            config,
+            Config {
+                query: String::from("a"),
+                filename: String::from("b"),
+            }
+        );
+    }
+
+    #[test]
+    fn config_too_few_arguments() {
+        assert!(Config::new(vec![String::from("a")]).is_err());
+    }
+
+    #[test]
+    fn config_too_many_arguments() {
+        assert!(
+            Config::new(vec![
+                String::from("a"),
+                String::from("b"),
+                String::from("c"),
+            ]).is_err()
+        );
+    }
+
+    #[test]
+    fn run_bad_filename() {
+        assert!(
+            run(Config {
+                query: String::from("q"),
+                filename: String::from("fakefile.txt"),
+            }).is_err()
+        );
+    }
 }
