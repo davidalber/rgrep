@@ -1,4 +1,3 @@
-use std::env;
 use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
@@ -9,8 +8,7 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn from_args() -> Result<Config, &'static str> {
-        let args: Vec<String> = env::args().skip(1).collect();
+    pub fn new(args: Vec<String>) -> Result<Config, &'static str> {
         if args.len() != 2 {
             return Err("two arguments are required (query and file)");
         }
