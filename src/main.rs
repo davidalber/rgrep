@@ -16,7 +16,7 @@ fn main() {
         process::exit(1);
     });
 
-    if let Err(err) = rgrep::run(config){
+    if let Err(err) = rgrep::run(config) {
         println!("Application error: {}", err);
         process::exit(1);
     };
