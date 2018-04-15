@@ -21,12 +21,17 @@ impl Config {
     }
 }
 
+fn run(config: Config) {
+    let mut f = File::open(config.filename).expect("file not found");
+    let mut contents = String::new();
+    f.read_to_string(&mut contents).expect("something went wrong reading the file");
+}
+
 fn main() {
     let config = Config::from_args().unwrap_or_else(|err| {
         println!("Problem parsing arguments: {}", err);
         process::exit(1);
     });
-    let mut f = File::open(config.filename).expect("file not found");
-    let mut contents = String::new();
-    f.read_to_string(&mut contents).expect("something went wrong reading the file");
+
+    run(config);
 }
