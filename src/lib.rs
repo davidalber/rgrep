@@ -20,10 +20,19 @@ impl Config {
     }
 }
 
+fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    contents.split('\n').filter(|l| l.contains(query)).collect()
+}
+
 pub fn run(config: Config) -> Result<(), Box<Error>> {
     let mut f = File::open(config.filename)?;
     let mut contents = String::new();
     f.read_to_string(&mut contents)?;
+
+    for line in search(&config.query, &contents) {
+        println!("{}", line);
+    }
+
     Ok(())
 }
 
@@ -66,6 +75,20 @@ mod test {
                 query: String::from("q"),
                 filename: String::from("fakefile.txt"),
             }).is_err()
+        );
+    }
+
+    #[test]
+    fn search_one_result() {
+        let query = "duct";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.";
+
+        assert_eq!(
+            vec!["safe, fast, productive."],
+            search(query, contents)
         );
     }
 }
