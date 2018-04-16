@@ -86,10 +86,7 @@ Rust:
 safe, fast, productive.
 Pick three.";
 
-        assert_eq!(
-            vec!["safe, fast, productive."],
-            search(query, contents)
-        );
+        assert_eq!(vec!["safe, fast, productive."], search(query, contents));
     }
 
     #[test]
@@ -114,9 +111,6 @@ Rust:
 safe, fast, productive.
 Pick three.";
 
-        assert_eq!(
-            Vec::<String>::new(),
-            search(query, contents)
-        );
+        assert_eq!(Vec::<String>::new(), search(query, contents));
     }
 }
