@@ -91,4 +91,32 @@ Pick three.";
             search(query, contents)
         );
     }
+
+    #[test]
+    fn search_multiple_results() {
+        let query = "s";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.";
+
+        assert_eq!(
+            vec!["Rust:", "safe, fast, productive."],
+            search(query, contents)
+        );
+    }
+
+    #[test]
+    fn search_no_results() {
+        let query = "bar";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.";
+
+        assert_eq!(
+            Vec::<String>::new(),
+            search(query, contents)
+        );
+    }
 }
