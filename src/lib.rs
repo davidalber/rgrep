@@ -1,3 +1,4 @@
+use std::env;
 use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
@@ -6,6 +7,7 @@ use std::io::prelude::*;
 pub struct Config {
     query: String,
     filename: String,
+    case_sensitive: bool,
 }
 
 impl Config {
@@ -16,7 +18,9 @@ impl Config {
 
         let query = args[0].clone();
         let filename = args[1].clone();
-        Ok(Config { query, filename })
+        let case_sensitive = env::var("CASE_SENSITIVE").is_err();
+
+        Ok(Config { query, filename, case_sensitive })
     }
 }
 
@@ -24,12 +28,23 @@ fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     contents.split('\n').filter(|l| l.contains(query)).collect()
 }
 
+fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    let query = query.to_lowercase();
+    contents.split("\n").filter(|l| l.to_lowercase().contains(&query)).collect()
+}
+
 pub fn run(config: Config) -> Result<(), Box<Error>> {
     let mut f = File::open(config.filename)?;
     let mut contents = String::new();
     f.read_to_string(&mut contents)?;
 
-    for line in search(&config.query, &contents) {
+    let results = if config.case_sensitive {
+        search(&config.query, &contents)
+    } else {
+        search_case_insensitive(&config.query, &contents)
+    };
+
+    for line in results {
         println!("{}", line);
     }
 
@@ -48,6 +63,7 @@ mod test {
             Config {
                 query: String::from("a"),
                 filename: String::from("b"),
+                case_sensitive: true,
             }
         );
     }
@@ -74,6 +90,7 @@ mod test {
             run(Config {
                 query: String::from("q"),
                 filename: String::from("fakefile.txt"),
+                case_sensitive: true,
             }).is_err()
         );
     }
@@ -84,7 +101,8 @@ mod test {
         let contents = "\
 Rust:
 safe, fast, productive.
-Pick three.";
+Pick three.
+Duct tape.";
 
         assert_eq!(vec!["safe, fast, productive."], search(query, contents));
     }
@@ -95,7 +113,8 @@ Pick three.";
         let contents = "\
 Rust:
 safe, fast, productive.
-Pick three.";
+Pick three.
+Duct tape.";
 
         assert_eq!(
             vec!["Rust:", "safe, fast, productive."],
@@ -109,8 +128,24 @@ Pick three.";
         let contents = "\
 Rust:
 safe, fast, productive.
-Pick three.";
+Pick three.
+Duct tape.";
 
         assert_eq!(Vec::<String>::new(), search(query, contents));
+    }
+
+    #[test]
+    fn search_case_insensitive_multiple_results() {
+        let query = "rUsT";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.
+Trust me.";
+
+        assert_eq!(
+            vec!["Rust:", "Trust me."],
+            search_case_insensitive(query, contents)
+        );
     }
 }
