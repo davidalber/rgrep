@@ -1,0 +1,1 @@
+This repository contains small projects that I did while reading [The Rust Programming Language](https://doc.rust-lang.org/book/second-edition/index.html) (a.k.a. The Rust Book). There's nothing groundbreaking here; I just wanted to save my work. :smile:
