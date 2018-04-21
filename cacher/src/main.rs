@@ -1,21 +1,23 @@
+use std::collections::HashMap;
+
 struct Cacher<T>
     where T: Fn(u32) -> u32 {
     f: T,
-    val: Option<u32>,
+    vals: HashMap<u32, u32>,
 }
 
 impl<T> Cacher<T>
     where T: Fn(u32) -> u32 {
     fn new(f: T) -> Cacher<T> {
-        Cacher { f: f, val: None }
+        Cacher { f: f, vals: HashMap::new() }
     }
 
     fn compute(&mut self, n: u32) -> u32 {
-        if self.val.is_none() {
-            self.val = Some((self.f)(n));
+        if !self.vals.contains_key(&n) {
+            self.vals.insert(n, (self.f)(n));
         }
 
-        self.val.unwrap()
+        self.vals.get(&n).unwrap().to_owned()
     }
 }
 
