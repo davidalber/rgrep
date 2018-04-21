@@ -1,23 +1,25 @@
 use std::collections::HashMap;
 
-struct Cacher<T>
-    where T: Fn(u32) -> u32 {
+struct Cacher<T, A>
+    where T: Fn(&A) -> A {
     f: T,
-    vals: HashMap<u32, u32>,
+    vals: HashMap<A, A>,
 }
 
-impl<T> Cacher<T>
-    where T: Fn(u32) -> u32 {
-    fn new(f: T) -> Cacher<T> {
+impl<T, A> Cacher<T, A>
+    where T: Fn(&A) -> A,
+          A: std::cmp::Eq + std::hash::Hash + std::clone::Clone {
+    fn new(f: T) -> Cacher<T, A> {
         Cacher { f: f, vals: HashMap::new() }
     }
 
-    fn compute(&mut self, n: u32) -> u32 {
+    fn compute(&mut self, n: A) -> &A {
         if !self.vals.contains_key(&n) {
-            self.vals.insert(n, (self.f)(n));
+            let val = (self.f)(&n);
+            self.vals.insert(n.clone(), val);
         }
 
-        self.vals.get(&n).unwrap().to_owned()
+        self.vals.get(&n).unwrap()
     }
 }
 
