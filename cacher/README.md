@@ -1,0 +1,1 @@
+This is the memoization example from the [closures section (Section 13.1) of the Rust book](https://doc.rust-lang.org/book/second-edition/ch13-01-closures.html).
