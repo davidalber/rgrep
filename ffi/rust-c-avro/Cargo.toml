@@ -1,0 +1,10 @@
+[package]
+name = "rust-c-avro"
+version = "0.1.0"
+authors = ["David Alber <david.alber@redfin.com>"]
+
+[lib]
+name = "rust_c_avro"
+crate-type = ["staticlib"]
+
+[dependencies]
